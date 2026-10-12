@@ -420,6 +420,8 @@ pub(super) const TABLE: &[(&str, &str)] = &[
     ("Spreads of up to 10 pages", "გაშლები 10 გვერდამდე"),
     ("for", "მომდევნო"),
     ("About DesignCraft", "DesignCraft-ის შესახებ"),
+    ("Quit DesignCraft", "DesignCraft-იდან გასვლა"),
+    ("Import Warnings", "იმპორტის გაფრთხილებები"),
     ("Accept All Changes", "ყველა ცვლილების მიღება"),
     ("Activate Document", "დოკუმენტის გააქტიურება"),
     ("Add Anchor Point", "საყრდენი წერტილის დამატება"),
