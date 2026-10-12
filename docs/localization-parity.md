@@ -49,7 +49,7 @@ string is translated and its script renders and edits correctly; none but Englis
 |---|---|---|---|
 | Italian | it | 1,464 (85%) | partial |
 | Ukrainian | uk | 1,432 (83%), plural categories handled | partial |
-| Georgian | ka | 1,722 (~100%: every catalog key plus the command labels the others lack), count captions as `noun: n`, UI font from an installed Georgian face, no Mtavruli from Change Case or index heads | partial (no native review yet) |
+| Georgian | ka | 1,724 (~100%: every catalog key plus the command labels the others lack), count captions as `noun: n`, UI font from an installed Georgian face, no Mtavruli from Change Case or index heads | partial (no native review yet) |
 
 DesignCraft ships **3** interface languages beyond the twelve; InDesign ships 17 beyond its
 eight of the twelve (cs, da, el, en_GB, fi, hu, it, nb, nl, pl, ro, ru, sq, sv, tr, uk, zh_TW).
