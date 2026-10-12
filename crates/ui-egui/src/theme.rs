@@ -255,7 +255,43 @@ impl Tokens {
 
 /// Install the UI fonts for the interface language `lang` (it orders the CJK fallbacks).
 pub fn install_fonts(ctx: &egui::Context, lang: &str) {
-    ctx.set_fonts(font_definitions(designcraft_fonts::CRAFT_FONTS, lang));
+    let mut fonts = font_definitions(designcraft_fonts::CRAFT_FONTS, lang);
+    add_georgian_font(&mut fonts);
+    ctx.set_fonts(fonts);
+}
+
+/// Installed fonts with Georgian (Mkhedruli) letters, best first: macOS (SF Georgian, Arial
+/// Unicode), Windows (Sylfaen) and Linux (Noto Sans Georgian, DejaVu Sans).
+#[cfg(not(target_arch = "wasm32"))]
+const GEORGIAN_FONTS: &[&str] = &[
+    "/System/Library/Fonts/SFGeorgian.ttf",
+    "/System/Library/Fonts/Supplemental/Arial Unicode.ttf",
+    "C:\\Windows\\Fonts\\sylfaen.ttf",
+    "/usr/share/fonts/truetype/noto/NotoSansGeorgian-Regular.ttf",
+    "/usr/share/fonts/noto/NotoSansGeorgian-Regular.ttf",
+    "/usr/share/fonts/google-noto/NotoSansGeorgian-Regular.ttf",
+    "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+    "/usr/share/fonts/dejavu/DejaVuSans.ttf",
+    "/usr/share/fonts/TTF/DejaVuSans.ttf",
+];
+
+/// The UI fonts have no Georgian and egui has no system-font discovery, so the Georgian interface
+/// (and Georgian names in panels) would draw boxes: the first installed face of [`GEORGIAN_FONTS`]
+/// goes at the end of every family. Nothing is bundled; without one (and on the web) nothing changes.
+fn add_georgian_font(fonts: &mut FontDefinitions) {
+    #[cfg(not(target_arch = "wasm32"))]
+    {
+        static FACE: std::sync::OnceLock<Option<Arc<FontData>>> = std::sync::OnceLock::new();
+        // A missing or unreadable file just means the next one is tried; read once per process.
+        let face = FACE.get_or_init(|| GEORGIAN_FONTS.iter().find_map(|p| std::fs::read(p).ok()).map(|b| Arc::new(FontData::from_owned(b))));
+        let Some(face) = face else { return };
+        fonts.font_data.insert("sys-georgian".into(), face.clone());
+        for stack in fonts.families.values_mut() {
+            stack.push("sys-georgian".into());
+        }
+    }
+    #[cfg(target_arch = "wasm32")]
+    let _ = fonts;
 }
 
 /// The UI fonts: the app's own, then the craft-fonts faces from `craft` (empty without
@@ -442,6 +478,23 @@ mod ukrainian_font_tests {
             for character in &characters {
                 assert_ne!(face.glyph_for(*character), 0, "missing {character} in {name}");
             }
+        }
+    }
+}
+
+#[cfg(all(test, not(target_arch = "wasm32")))]
+mod georgian_font_tests {
+    #[test]
+    fn an_installed_georgian_face_ends_every_family() {
+        let mut definitions = super::font_definitions(&[], "ka");
+        super::add_georgian_font(&mut definitions);
+        // Machines without any of the listed fonts (most CI images) change nothing.
+        if !super::GEORGIAN_FONTS.iter().any(|p| std::path::Path::new(p).is_file()) {
+            assert!(!definitions.font_data.contains_key("sys-georgian"));
+            return;
+        }
+        for stack in definitions.families.values() {
+            assert_eq!(stack.last().map(String::as_str), Some("sys-georgian"));
         }
     }
 }
