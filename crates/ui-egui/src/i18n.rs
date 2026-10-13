@@ -3034,7 +3034,7 @@ mod tests {
             assert!(!translation.chars().any(|c| ('\u{1C90}'..='\u{1CBF}').contains(&c)), "Mtavruli: {key}");
         }
         assert_eq!(tr("ka", "File"), "ფაილი");
-        assert_eq!(tr("ka", "Save As…"), "შენახვა სხვა სახელით…");
+        assert_eq!(tr("ka", "Save As…"), "შენახვა როგორც…");
         assert_eq!(tr("ka", "Unknown label"), "Unknown label");
         assert!(!is_rtl("ka"));
         for n in [1, 2, 5, 21] {
