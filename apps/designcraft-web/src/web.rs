@@ -57,6 +57,11 @@ pub fn start() {
                     }
                     let inbox: Inbox = Inbox::default();
                     let mut app = DesignApp::new(Session::new(), services(inbox.clone(), cc.egui_ctx.clone()));
+                    // The browser keeps no settings: start in `?lang=`, else the first of the
+                    // browser's languages DesignCraft has.
+                    if let Some(lang) = designcraft_ui_egui::i18n::first_supported(&browser_languages()) {
+                        app.ui.language = lang.to_string();
+                    }
                     if has_query_flag(&query(), "sample") {
                         let _ = app.run("file.newSample", serde_json::json!({}));
                     }
@@ -75,6 +80,17 @@ pub fn start() {
 
 fn query() -> String {
     web_sys::window().and_then(|w| w.location().search().ok()).unwrap_or_default()
+}
+
+/// `?lang=` from the address, then the browser's preferred languages.
+fn browser_languages() -> Vec<String> {
+    let query = query();
+    let mut tags: Vec<String> =
+        form_urlencoded::parse(query.trim_start_matches('?').as_bytes()).filter(|(k, _)| k == "lang").map(|(_, v)| v.into_owned()).collect();
+    if let Some(navigator) = web_sys::window().map(|w| w.navigator()) {
+        tags.extend(navigator.languages().iter().filter_map(|v| v.as_string()));
+    }
+    tags
 }
 
 /// Wraps the app to read dropped files asynchronously (browsers can't read them synchronously)
