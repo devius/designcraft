@@ -57,6 +57,12 @@ pub fn start() {
                     }
                     let inbox: Inbox = Inbox::default();
                     let mut app = DesignApp::new(Session::new(), services(inbox.clone(), cc.egui_ctx.clone()));
+                    // The browser keeps no settings: start in `?lang=`, else the first of the
+                    // browser's languages DesignCraft has.
+                    if let Some(lang) = designcraft_ui_egui::i18n::first_supported(&browser_languages()) {
+                        app.ui.language = lang.to_string();
+                    }
+                    load_fallback_font(cc.egui_ctx.clone());
                     if has_query_flag(&query(), "sample") {
                         let _ = app.run("file.newSample", serde_json::json!({}));
                     }
@@ -75,6 +81,50 @@ pub fn start() {
 
 fn query() -> String {
     web_sys::window().and_then(|w| w.location().search().ok()).unwrap_or_default()
+}
+
+/// `?lang=` from the address, then the browser's preferred languages.
+fn browser_languages() -> Vec<String> {
+    let query = query();
+    let mut tags: Vec<String> =
+        form_urlencoded::parse(query.trim_start_matches('?').as_bytes()).filter(|(k, _)| k == "lang").map(|(_, v)| v.into_owned()).collect();
+    if let Some(navigator) = web_sys::window().map(|w| w.navigator()) {
+        tags.extend(navigator.languages().iter().filter_map(|v| v.as_string()));
+    }
+    tags
+}
+
+/// The Georgian interface face, when the site serves one beside the page; without it Georgian
+/// draws as boxes, as before.
+const FALLBACK_FONT_URL: &str = "fonts/NotoSansGeorgian.ttf";
+
+fn load_fallback_font(ctx: egui::Context) {
+    wasm_bindgen_futures::spawn_local(async move {
+        match fetch_font(FALLBACK_FONT_URL).await {
+            Ok(bytes) => {
+                designcraft_ui_egui::theme::set_runtime_fallback_font(bytes);
+                ctx.request_repaint();
+            }
+            Err(e) => log::info!("no interface fallback font at {FALLBACK_FONT_URL}: {e}"),
+        }
+    });
+}
+
+/// A font file from the site: only a TrueType/OpenType file is returned (a host may answer a
+/// missing file with its index page).
+async fn fetch_font(url: &str) -> Result<Vec<u8>, String> {
+    let js = |e: wasm_bindgen::JsValue| format!("{e:?}");
+    let window = web_sys::window().ok_or("no window")?;
+    let resp: web_sys::Response = wasm_bindgen_futures::JsFuture::from(window.fetch_with_str(url)).await.map_err(js)?.dyn_into().map_err(js)?;
+    if !resp.ok() {
+        return Err(format!("HTTP {}", resp.status()));
+    }
+    let buf = wasm_bindgen_futures::JsFuture::from(resp.array_buffer().map_err(js)?).await.map_err(js)?;
+    let bytes = js_sys::Uint8Array::new(&buf).to_vec();
+    match bytes.get(..4) {
+        Some([0, 1, 0, 0] | b"OTTO" | b"true") if bytes.len() <= 32 << 20 => Ok(bytes),
+        _ => Err("not a font file".into()),
+    }
 }
 
 /// Wraps the app to read dropped files asynchronously (browsers can't read them synchronously)

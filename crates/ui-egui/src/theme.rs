@@ -290,8 +290,32 @@ fn add_georgian_font(fonts: &mut FontDefinitions) {
             stack.push("sys-georgian".into());
         }
     }
+    // The web build: the face the page fetched ([`set_runtime_fallback_font`]), if it has one.
     #[cfg(target_arch = "wasm32")]
-    let _ = fonts;
+    if let Some(bytes) = RUNTIME_FALLBACK.get() {
+        fonts.font_data.insert("web-georgian".into(), Arc::new(FontData::from_static(bytes)));
+        for stack in fonts.families.values_mut() {
+            stack.push("web-georgian".into());
+        }
+    }
+}
+
+/// A Georgian face supplied at run time: the web build fetches one served beside the page.
+static RUNTIME_FALLBACK: std::sync::OnceLock<Vec<u8>> = std::sync::OnceLock::new();
+/// The runtime face arrived and the installed fonts don't have it yet.
+static RUNTIME_FALLBACK_NEW: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+
+/// Add `bytes` (a font file) as the Georgian interface face where no installed one can be read
+/// (the web); the app installs it on the next frame. Only the first call counts.
+pub fn set_runtime_fallback_font(bytes: Vec<u8>) {
+    if RUNTIME_FALLBACK.set(bytes).is_ok() {
+        RUNTIME_FALLBACK_NEW.store(true, std::sync::atomic::Ordering::Relaxed);
+    }
+}
+
+/// Whether a runtime fallback face arrived since the last call.
+pub(crate) fn take_new_runtime_fallback() -> bool {
+    RUNTIME_FALLBACK_NEW.swap(false, std::sync::atomic::Ordering::Relaxed)
 }
 
 /// The UI fonts: the app's own, then the craft-fonts faces from `craft` (empty without

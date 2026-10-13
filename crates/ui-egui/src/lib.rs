@@ -777,7 +777,7 @@ impl DesignApp {
             self.styled = true;
             self.restyle = true;
         } else {
-            if self.fonts_lang != self.ui.language {
+            if self.fonts_lang != self.ui.language || theme::take_new_runtime_fallback() {
                 theme::install_fonts(ctx, &self.ui.language);
                 self.fonts_lang = self.ui.language.clone();
             }

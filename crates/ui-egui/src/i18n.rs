@@ -25,6 +25,24 @@ pub const LANGUAGES: &[(&str, &str)] = &[
     ("ka", "ქართული"),
 ];
 
+/// The first of the system's preferred languages (BCP 47 tags such as `ka-GE`, most preferred
+/// first) that has a catalog, as a [`LANGUAGES`] code (`""` for English); `None` when none has.
+/// The web build starts in it (`?lang=`, then the browser's languages).
+pub fn first_supported(tags: &[String]) -> Option<&'static str> {
+    tags.iter().find_map(|tag| {
+        let tag = tag.trim().replace('_', "-").to_ascii_lowercase();
+        let primary = tag.split('-').next().unwrap_or_default();
+        let wanted = match primary {
+            "" => return None,
+            "en" => "",
+            "pt" => "pt-br",
+            _ if LANGUAGES.iter().any(|(c, _)| *c == tag) => tag.as_str(),
+            p => p,
+        };
+        LANGUAGES.iter().map(|(c, _)| *c).find(|c| *c == wanted)
+    })
+}
+
 /// English → [German, French, Spanish, Japanese, Simplified Chinese].
 const TABLE: &[(&str, [&str; 5])] = &[
     // Menus.
@@ -2935,6 +2953,15 @@ pub fn workspace_name<'a>(lang: &str, name: &'a str) -> &'a str {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn first_supported_takes_the_first_language_with_a_catalog() {
+        let tags = |t: &[&str]| t.iter().map(|s| s.to_string()).collect::<Vec<_>>();
+        assert_eq!(super::first_supported(&tags(&["ka-GE", "ka", "en"])), Some("ka"));
+        assert_eq!(super::first_supported(&tags(&["nl", "pt-PT", "ka"])), Some("pt-br"));
+        assert_eq!(super::first_supported(&tags(&["en-US", "ka"])), Some(""));
+        assert_eq!(super::first_supported(&tags(&["nl", ""])), None);
+    }
+
     use super::*;
 
     #[test]
