@@ -9,7 +9,7 @@ system language (`ka`, `ka-GE`, `ka_GE.UTF-8`) for any language yet; English is 
 language is chosen. Document text, command ids, CLI/MCP/control responses and file paths do not
 change.
 
-`crates/ui-egui/src/i18n/ka.rs` has 1,743 entries: every key of the shared, Arabic, Brazilian
+`crates/ui-egui/src/i18n/ka.rs` has 1,753 entries: every key of the shared, Arabic, Brazilian
 Portuguese, Japanese, Italian and Ukrainian tables, plus the labels that only the code or the command
 table use. It covers the menus, panels, dialogs, tools, built-in style and swatch names, and status
 captions. Lower-layer engine and import messages keep their English wording, as in the other
