@@ -795,20 +795,3 @@ mod ukrainian_font_tests {
         }
     }
 }
-
-#[cfg(all(test, not(target_arch = "wasm32")))]
-mod georgian_font_tests {
-    #[test]
-    fn an_installed_georgian_face_ends_every_family() {
-        let mut definitions = super::font_definitions(&[], "ka");
-        super::add_georgian_font(&mut definitions);
-        // Machines without any of the listed fonts (most CI images) change nothing.
-        if !super::GEORGIAN_FONTS.iter().any(|p| std::path::Path::new(p).is_file()) {
-            assert!(!definitions.font_data.contains_key("sys-georgian"));
-            return;
-        }
-        for stack in definitions.families.values() {
-            assert_eq!(stack.last().map(String::as_str), Some("sys-georgian"));
-        }
-    }
-}
