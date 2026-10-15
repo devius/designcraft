@@ -435,6 +435,7 @@ pub(crate) fn add_system_fallbacks(fonts: &mut FontDefinitions, system: &[System
         stack.splice(at..at, preferred.iter().cloned());
         stack.extend(rest.iter().cloned());
     }
+}
 
 /// The web build: the Georgian face the page fetched ([`set_runtime_fallback_font`]), if it has
 /// one, at the end of every family (the web has no installed fonts to scan).
