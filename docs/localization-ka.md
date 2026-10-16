@@ -1,17 +1,18 @@
 # Georgian interface
 
-> **Last reviewed:** 2026-10-13 · **Last updated:** 2026-10-13 · **Change:** minor (Georgian interface notes and terminology) · **Target:** DesignCraft 0.7.1
+> **Last reviewed:** 2026-10-13 · **Last updated:** 2026-10-17 · **Change:** minor (catalog synced with upstream) · **Target:** DesignCraft 0.7.1
 
 Choose **Edit › Interface Language › ქართული**. The catalog code is `ka`; the control and MCP command
 `app.language` with `{"lang":"ka"}` selects it explicitly. The choice is saved with the other
-interface settings (the macOS menu bar follows on the next launch). DesignCraft does not follow the
-system language (`ka`, `ka-GE`, `ka_GE.UTF-8`) for any language yet; English is the default until a
-language is chosen. Document text, command ids, CLI/MCP/control responses and file paths do not
+interface settings (the macOS menu bar follows on the next launch). The desktop app does not follow the
+system language (`ka`, `ka-GE`, `ka_GE.UTF-8`) yet; English is the default until a language is chosen.
+The web build starts in `?lang=ka`, else in the first of the browser's languages that has a catalog
+(`ka`, `ka-GE`). Document text, command ids, CLI/MCP/control responses and file paths do not
 change.
 
-`crates/ui-egui/src/i18n/ka.rs` has 1,753 entries: every key of the shared, Arabic, Brazilian
-Portuguese, Japanese, Italian and Ukrainian tables, plus the labels that only the code or the command
-table use. It covers the menus, panels, dialogs, tools, built-in style and swatch names, and status
+`crates/ui-egui/src/i18n/ka.rs` has 2,370 entries: every key of the shared, Arabic, Brazilian
+Portuguese, Czech, French, German, Italian, Japanese, Polish, Russian and Ukrainian tables, plus the
+labels that only the code, the command table or the Tools panel use. It covers the menus, panels, dialogs, tools, built-in style and swatch names, and status
 captions. Lower-layer engine and import messages keep their English wording, as in the other
 languages. It is written from the meaning of the English labels; no proprietary translation
 resources were consulted.
@@ -26,10 +27,11 @@ the interface language.
   and gives Mtavruli (`ᲐᲑᲒ`). The interface never uses Mtavruli, and commands are verbal nouns
   (`შენახვა`, `განთავსება…`).
 - **Counts** are count-neutral, noun first (`გვერდი: 5`): `count_label` writes `noun: n` for `ka`.
-- **Fonts:** neither the bundle nor craft-fonts has a Georgian face yet. `theme::add_georgian_font`
-  appends an installed face as a UI fallback (SF Georgian or Arial Unicode on macOS, Sylfaen on
-  Windows, Noto Sans Georgian or DejaVu Sans on Linux) and ships nothing. The web build has no
-  Georgian face until an OFL one (such as Noto Sans Georgian) is added to craft-fonts.
+- **Fonts:** neither the bundle nor craft-fonts has a Georgian face yet. On desktop,
+  `theme::add_system_fallbacks` appends an installed face for the Georgian script (Segoe UI, Sylfaen,
+  Noto Sans Georgian or DejaVu Sans) and ships nothing. The web build fetches
+  `fonts/NotoSansGeorgian.ttf` when the site serves one beside the page; without it Georgian draws as
+  boxes until an OFL Georgian face is added to craft-fonts.
 
 ## Terminology
 
@@ -71,11 +73,12 @@ strings added later fall back to English until they are translated.
 `cargo test -p designcraft-ui-egui --lib i18n` checks that the Georgian catalog has no duplicate or
 empty rows, keeps every placeholder and ellipsis, contains no Mtavruli, returns its rows through
 `tr`, and writes counts as `noun: n`. `cargo test -p designcraft-engine change_case` covers Change
-Case on Georgian text, and `cargo test -p designcraft-ui-egui an_installed_georgian_face` the font
-fallback. A native-speaker skim is welcome.
+Case on Georgian text, and `style_row_menu_strings_are_translated_in_every_language` covers Georgian
+with the other languages. A native-speaker skim is welcome.
 
 ## Revision history
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-17 | minor | Catalog synced with upstream (2,370 entries); web language and font notes |
 | 2026-10-13 | minor | Georgian interface notes and terminology |
