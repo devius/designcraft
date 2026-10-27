@@ -2857,4 +2857,10 @@ pub(super) const TABLE: &[(&str, &str)] = &[
     ("−Bin", "−Bin"),
     ("−LOC", "−LOC"),
     ("⚠ {chord} is used by {label}", "⚠ {chord} დაკავებულია: {label}"),
+    ("Y:", "Y:"),
+    ("Show the Typography panel", "ტიპოგრაფიის პანელის ჩვენება"),
+    (
+        "This story was edited in the layout: you'll be asked before those edits are replaced",
+        "ეს ტექსტური ნაკადი განლაგებაში რედაქტირებულია: ამ ცვლილებების ჩანაცვლებამდე დაგეკითხებით",
+    ),
 ];
