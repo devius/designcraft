@@ -142,6 +142,7 @@ pub(super) const TABLE: &[(&str, &str)] = &[
     ("Process Cyan", "პროცესის ცისფერი"),
     ("Colors and Inks", "ფერები და საღებავები"),
     ("Links and Images", "ბმულები და გამოსახულებები"),
+    ("Links and Images: {found} linked, {modified} changed, {missing} not found", "ბმულები და გამოსახულებები: დაკავშირებული — {found}, შეცვლილი — {modified}, ვერ მოიძებნა — {missing}"),
     ("Fonts", "შრიფტები"),
     ("Summary", "შეჯამება"),
     ("Restart Numbering", "ნუმერაციის თავიდან დაწყება"),
