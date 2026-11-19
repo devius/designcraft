@@ -2400,7 +2400,7 @@ pub(super) const TABLE: &[(&str, &str)] = &[
     ("Press keys…", "დააჭირეთ კლავიშებს…"),
     ("Print Layer", "შრის ბეჭდვა"),
     ("Prioritize Adjustment Amount", "კორექციის სიდიდის პრიორიტეტი"),
-    ("Process", "პროცესი"),
+    ("Process", "პროცესული ფერი"),
     ("Push In First", "ჯერ შეწევა"),
     ("Push Out First", "ჯერ გამოწევა"),
     ("Push Out Only", "მხოლოდ გამოწევა"),
