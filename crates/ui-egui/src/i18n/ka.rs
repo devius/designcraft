@@ -1142,7 +1142,7 @@ pub(super) const TABLE: &[(&str, &str)] = &[
     ("OVERSET", "ტექსტი არ ეტევა"),
     ("Open source. No telemetry.", "ღია კოდი. ტელემეტრიის გარეშე."),
     ("Options", "პარამეტრები"),
-    ("Options for Black on RGB and Grayscale Devices", "შავის პარამეტრები RGB და რუხი ტონების მოწყობილობებისთვის"),
+    ("Options for Black on RGB and Grayscale Devices", "შავის პარამეტრები RGB და ნაცრისფერი ტონების მოწყობილობებისთვის"),
     ("Other", "სხვა"),
     ("Output", "გამოტანა"),
     ("Page Numbering", "გვერდების დანომვრა"),
